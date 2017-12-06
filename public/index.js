@@ -3,6 +3,7 @@ $(document).ready(function() {
   // Setting a reference to the article-container div where all the dynamic content will go
   // Adding event listeners to any dynamically generated "save article"
   // and "scrape new article" buttons
+  var currentNewestID = "";
   var articleContainer = $("#articles");
   $(document).on("click", ".btn.save", handleArticleSave);
   $(document).on("click", ".scrape-new", handleArticleScrape);
@@ -15,14 +16,24 @@ $(document).ready(function() {
     articleContainer.empty();
     $.get("/articles").then(function(data) {
       // console.log(data);
+      currentNewestID = data[0]._id;
+      if (currentNewestID === "" || currentNewestID == data[0]._id) {
+        // renderEmpty();
+        bootbox.alert("<h3 class='text-center m-top-80'>" + "Sorry, there's not any new content!" + "<h3>");
+        console.log("data hasnt changed");
+        console.log(currentNewestID);
+        console.log(data[0]._id);
+
       // If we have headlines, render them to the page
       if (data && data.length) {
         renderArticles(data);
+        console.log("rendering articles");
       }
       else {
         // Otherwise render a message explaing we have no articles
         renderEmpty();
       }
+    }
     });
   }
 
@@ -32,7 +43,7 @@ $(document).ready(function() {
     var articlePanels = [];
     // We pass each article JSON object to the createPanel function which returns a bootstrap
     // panel with our article data inside
-    for (var i = 0; i < articles.length; i++) {
+    for (var i = 0; i < 19; i++) {
       articlePanels.push(createPanel(articles[i]));
     }
     // Once we have all of the HTML for the articles stored in our articlePanels array,
@@ -116,12 +127,17 @@ $(document).ready(function() {
 
   function handleArticleScrape() {
     // This function handles the user clicking any "scrape new article" buttons
-    $.get("/scrape").then(function(data) {
+    $.get("/scrape").then(function(scrapedData) {
+      if (scrapedData) {
+
+      }
+      console.log(scrapedData);
       // If we are able to succesfully scrape the NYTIMES and compare the articles to those
       // already in our collection, re render the articles on the page
       // and let the user know how many unique articles we were able to save
       initPage();
-      bootbox.alert("<h3 class='text-center m-top-80'>" + data.message + "<h3>");
+      // bootbox.alert("<h3 class='text-center m-top-80'>" + data.message + "<h3>");
     });
   }
+
 });
