@@ -10,8 +10,8 @@ $(document).ready(function() {
   var mainHeading = $("#mainHeading");
   var subHeading = $("#subHeading");
 
-  $(document).on("click", ".btn.save", handleArticleSave);
-  $(document).on("click", ".scrape-new", handleArticleScrape);
+  $(document).on("click", ".btn.save", saveArticle);
+  $(document).on("click", ".scrape-new", scrapeArticle);
 
   // Once the page is ready, run the initPage function to kick things off
   initPage();
@@ -71,17 +71,19 @@ $(document).ready(function() {
       "Article: ",
       i,
       "</p>",
-      "<h3>",
-      "<a class='article-link' target='_blank' href='" + article.link + "'>",
-      article.link,
-      "</a>",
-      "<a class='btn btn-success save'>",
+      "<h3 id='resultsTitle>'",
+      "<p id='resultsTitle>'",
+      article.title,
+      "</p>",
+      "<a class='btn btn-warning save'>",
       "Save Article",
       "</a>",
       "</h3>",
       "</div>",
       "<div class='panel-body'>",
-      article.title,
+      "<a id= 'resultsLink' class='article-link' target='" + article.link + "' href='" + article.link + "'>",
+      article.link,
+      "</a>",
       "</div>",
       "</div>"
     ].join(""));
@@ -113,16 +115,13 @@ $(document).ready(function() {
     articleContainer.append(emptyAlert);
   }
 
-  function handleArticleSave() {
-    // This function is triggered when the user wants to save an article
-    // When we rendered the article initially, we attatched a javascript object containing the headline id
-    // to the element using the .data method. Here we retrieve that.
+  function saveArticle() {
+    //
+    //
     var articleToSave = $(this).parents(".panel").data();
-    articleToSave.saved = true;
+    articleToSave.isSaved = true;
     // Using a patch method to be semantic since this is an update to an existing record in our collection
-    $.ajax({method: "PUT", url: "/api/headlines", data: articleToSave}).then(function(data) {
-      // If successful, mongoose will send back an object containing a key of "ok" with the value of 1
-      // (which casts to 'true')
+    $.ajax({method: "PUT", url: "/savedArticles", data: articleToSave}).then(function(data) {
       if (data.ok) {
         // Run the initPage function again. This will reload the entire list of articles
         initPage();
@@ -130,7 +129,7 @@ $(document).ready(function() {
     });
   }
 
-  function handleArticleScrape() {
+  function scrapeArticle() {
     // This function handles the user clicking any "scrape new article" buttons
     $.get("/scrape").then(function(scrapedData) {
       console.log(scrapedData._id);
