@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Mongo Scraper</title>
+  <title>Reddit Tech News Article Scraper</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/paper/bootstrap.min.css">
@@ -41,10 +41,13 @@
 </head>
 
 <body>
+
+<div class="wrapper">
+
   <nav class="navbar navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="/">Mongo Scraper</a>
+        <a class="navbar-brand" href="/">Reddit Tech Scraper</a>
       </div>
       <ul class="nav navbar-nav">
         <li class="active"><a href="/">Home</a></li>
@@ -61,20 +64,31 @@
     </div>
     <div class="caption">
       <h1>Mongo Scraper</h1>
-      <p>New York Times Edition</p>
+      <p>Reddit Tech Edition</p>
     </div>
   </div>
 
+  <!-- blank div for articles -->
+  <div id="articles"></div>
+
+  <!-- blank div for notes -->
+  <div id="notes"></div>
+
+  <!-- footer -->
   <footer class="footer">
     <div class="container">
-      <p>New York Times Mongo Scraper</p>
+      <p>Reddit Tech News Article Scraper</p>
     </div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
-  <script src="../../assets/javascript/index.js"></script>
+  <script src="index.js"></script>
+  <!-- <script src="app.js"></script> -->
+
+</div>
+
 </body>
 
 </html>
