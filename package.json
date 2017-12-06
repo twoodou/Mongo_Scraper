@@ -18,11 +18,15 @@
   },
   "homepage": "https://github.com/twoodou/Mongo_Scraper#readme",
   "dependencies": {
+    "assert": "^1.4.1",
     "axios": "^0.17.1",
     "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
+    "http": "0.0.0",
+    "mongodb": "^3.0.0-rc0",
+    "mongojs": "^2.4.1",
     "mongoose": "^4.13.6",
     "morgan": "^1.9.0",
     "request": "^2.83.0"

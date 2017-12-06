@@ -1,7 +1,10 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
+var http = require('http');
 var mongoose = require("mongoose");
+var mongodb = require("mongodb");
+var mongojs = require("mongojs");
 
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
@@ -12,8 +15,21 @@ var cheerio = require("cheerio");
 // Require all models
 var db = require("./models");
 
-var PORT = 3000;
+// var PORT = 3000;
 var port = process.env.PORT || 3000;
+
+// var MONGOLAB_URI = "mongodb://heroku_58qw6fsr:TW123456@ds033196.mlab.com:33196/heroku_58qw6fsr";
+// var rawURI = "mongodb://heroku_58qw6fsr:9gba0vkbsd1v3rpta11ojjh08a@ds033196.mlab.com:33196/heroku_58qw6fsr";
+// var MONGOHQ_URL = "ds033196.mlab.com:33196/heroku_58qw6fsr";
+
+
+// var options = {
+//   useMongoClient: true
+// };
+
+// Here we find an appropriate database to connect to, defaulting to
+// localhost if we don't find one.
+//var uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost:27017';
 
 // Initialize Express
 var app = express();
@@ -29,13 +45,50 @@ app.use(express.static("public"));
 
 // Set mongoose to leverage built in JavaScript ES6 Promises
 // Connect to the Mongo DB
+// mongoose.Promise = Promise;
+// mongoose.connect("mongodb://<heroku_58qw6fsr>:<TW123456>@ds033196.mlab.com:33196/heroku_58qw6fsr",
+// {useMongoClient: true});
+//var MongoClient = require("mongodb").MongoClient;
+var assert = require("assert");
+
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://heroku_58qw6fsr:@ds033196.mlab.com:33196/heroku_58qw6fsr",
-{useMongoClient: true});
+mongoose.connect(MONGODB_URI, {
+  useMongoClient: true
+});
+
+// Start the server
+app.listen(port, function() {
+  console.log("App running on port " + port + "!");
+});
+
+// MongoClient.connect(uristring, function(err, db) {
+//   if (err) {
+//     console.log("BROKEN:-------------------------");
+//     console.log(err);
+//   }
+//   assert.equal(null, err);
+//   console.log("Connection Success");
+
+  // console.log(db);
+
+
+// mongoose.connect(rawURI, options,
+//   // {useMongoClient: true},
+//   function(err) {
+//   if (err) {
+//     console.log('ERROR connecting to: ' + rawURI + '. ' + err);
+//   } else {
+//     console.log('Succeeded connected to: ' + rawURI);
+//   }
+// });
+// .then(function(db) {
+//   console.log(db);
+
 
 // Routes
 // require("./routes/api-routes.js")(app);
-
 
 // A GET route for scraping the website
 app.get("/scrape", function(req, res) {
@@ -59,13 +112,14 @@ app.get("/scrape", function(req, res) {
         // If we were able to successfully scrape and save an Article, send a message to the client
         // res.json(dbArticle);
         // res.redirect("/scrape");
-        res.send("Scrape Complete");
+
       }).catch(function(err) {
         // If an error occurred, send it to the client
         res.json(err);
       });
     });
   });
+    res.send("Scrape Complete");
 });
 
 // Route for getting all Articles from the db
@@ -114,8 +168,4 @@ app.post("/articles/:id", function(req, res) {
     res.json(err);
   });
 });
-
-// Start the server
-app.listen(port, function() {
-  console.log("App running on port " + port + "!");
-});
+// });
