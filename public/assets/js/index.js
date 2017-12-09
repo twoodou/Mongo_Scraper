@@ -1,4 +1,5 @@
-/* gloabl bootbox */
+// var axios = require('axios');
+
 var currentNewestID = "1337";
 var numNewArticles = 0;
 
@@ -12,6 +13,7 @@ $(document).ready(function() {
 
   $(document).on("click", ".btn.save", saveArticle);
   $(document).on("click", ".scrape-new", scrapeArticle);
+  $(document).on("click", ".viewSaved", viewSaved);
 
   // Once the page is ready, run the initPage function to kick things off
   initPage();
@@ -20,20 +22,21 @@ $(document).ready(function() {
     // Empty the article container, run an AJAX request for any unsaved headlines
     articleContainer.empty();
     $.get("/articles").then(function(data) {
-
+      console.log("DATTAAAAAA");
+      console.log(data);
       if ((data.length === 0) && (currentNewestID === "1337")) {
         renderEmpty();
         console.log("rendering EMPTY");
 
       } else if ((data.length) && (currentNewestID == data[0]._id)) {
         bootbox.alert("<h3 class='text-center m-top-80'>" + "Sorry, there's not any new content!" + "<h3>");
-        console.log(currentNewestID);
-        console.log(data[0]._id);
+        // console.log(currentNewestID);
+        // console.log(data[0]._id);
       }
 
       else {
         numNewArticles = parseInt(data.length);
-        console.log(data);
+        // console.log(data);
         currentNewestID = data[0]._id;
         // mainHeading.html("<h2>" + "Welcome back! See your latest " + numNewArticles + " articles below!" + "</h2>");
         subHeading.text("Welcome back! See your latest " + numNewArticles + " articles below!");
@@ -57,10 +60,12 @@ $(document).ready(function() {
     }
     // Once we have all of the HTML for the articles stored in our articlePanels array,
     // append them to the articlePanels container
-    articleContainer.append(articlePanels);
+    articleContainer.prepend(articlePanels);
   }
 
   function createPanel(article, i) {
+    console.log("CREATEPANEL ARTICLE:::::::::***************");
+    console.log(article);
     // This functiont takes in a single JSON object for an article/headline
     // It constructs a jQuery element containing all of the formatted HTML for the
     // article panel
@@ -68,17 +73,20 @@ $(document).ready(function() {
       "<div class='panel panel-default'>",
       "<div class='panel-heading'>",
       "<p class='numberer'>",
+      "<h4 id='numberer'>",
       "Article: ",
       i,
+      "</h4>",
       "</p>",
-      "<h3 id='resultsTitle>'",
-      "<p id='resultsTitle>'",
+      "<h4 id='resultsTitle'>",
+      // "<p id='resultsTitle'>",
       article.title,
-      "</p>",
+      // "</p>",
+      "</h4>",
       "<a class='btn btn-warning save'>",
       "Save Article",
       "</a>",
-      "</h3>",
+      // "</h3>",
       "</div>",
       "<div class='panel-body'>",
       "<a id= 'resultsLink' class='article-link' target='" + article.link + "' href='" + article.link + "'>",
@@ -120,8 +128,10 @@ $(document).ready(function() {
     //
     var articleToSave = $(this).parents(".panel").data();
     articleToSave.isSaved = true;
+    console.log("ARTICLE SAVED");
+    bootbox.alert("Article Saved!");
     // Using a patch method to be semantic since this is an update to an existing record in our collection
-    $.ajax({method: "PUT", url: "/savedArticles", data: articleToSave}).then(function(data) {
+    $.ajax({method: "PUT", url: "/saveArticles", data: articleToSave}).then(function(data) {
       if (data.ok) {
         // Run the initPage function again. This will reload the entire list of articles
         initPage();
@@ -132,17 +142,23 @@ $(document).ready(function() {
   function scrapeArticle() {
     // This function handles the user clicking any "scrape new article" buttons
     $.get("/scrape").then(function(scrapedData) {
-      console.log(scrapedData._id);
-      if (scrapedData._id == currentNewestID) {
+      console.log(scrapedData);
+      if (scrapedData._id) {
+        currentNewestID = scrapedData._id;
         initPage();
         // bootbox.alert("<h3 class='text-center m-top-80'>" + "Sorry, no new content has been added! Try again soon!" + "<h3>");
       } else {
-        // If we are able to succesfully scrape the NYTIMES and compare the articles to those
-        // already in our collection, re render the articles on the page
-        // and let the user know how many unique articles we were able to save
         initPage();
-        bootbox.alert("<h3 class='text-center m-top-80'>" + "Articles Added!" + "<h3>");
+        bootbox.alert("<h3 class='text-center m-top-80'>" + "No New Articles Added :'(" + "<h3>");
       }
+    });
+  }
+
+  function viewSaved() {
+    // This function handles the user clicking any "scrape new article" buttons
+    $.get("/savedArticles").then(function(savedData) {
+      // console.log(savedData);
+      renderArticles(savedData);
     });
   }
 

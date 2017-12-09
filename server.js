@@ -51,7 +51,7 @@ app.use(express.static("public"));
 //var MongoClient = require("mongodb").MongoClient;
 var assert = require("assert");
 
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoscraper";
 
 mongoose.Promise = Promise;
 mongoose.connect(MONGODB_URI, {
@@ -108,7 +108,7 @@ app.get("/scrape", function(req, res) {
 
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result).then(function(dbArticle) {
-        // console.log(dbArticle);
+        console.log(dbArticle);
         // If we were able to successfully scrape and save an Article, send a message to the client
         // res.json(dbArticle);
         // res.redirect("/scrape");
@@ -119,7 +119,7 @@ app.get("/scrape", function(req, res) {
       });
     });
   });
-    res.send("Scrape Complete");
+    res.redirect("/");
 });
 
 // Route for getting all Articles from the db
@@ -162,6 +162,19 @@ app.post("/articles/:id", function(req, res) {
     }, {new: true});
   }).then(function(dbArticle) {
     // If we were able to successfully update an Article, send it back to the client
+    res.json(dbArticle);
+  }).catch(function(err) {
+    // If an error occurred, send it to the client
+    res.json(err);
+  });
+});
+
+// Route for getting all SAVED Articles from the db
+app.get("/savedArticles", function(req, res) {
+  // Grab every document in the Articles collection
+  db.Article.find({isSaved:true}).then(function(dbArticle) {
+    // If we were able to successfully find Articles, send them back to the client
+    console.log(dbArticle);
     res.json(dbArticle);
   }).catch(function(err) {
     // If an error occurred, send it to the client

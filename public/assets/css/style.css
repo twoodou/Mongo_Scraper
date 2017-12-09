@@ -204,3 +204,8 @@ textarea {
 #resultsTitle {
   color: white;
 }
+
+#numberer {
+	color: white;
+	text-decoration: underline;
+}
